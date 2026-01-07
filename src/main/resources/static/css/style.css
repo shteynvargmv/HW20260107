@@ -1,0 +1,40 @@
+.btn {
+    border: 2px solid black !important;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.dlt{
+    background-color: gray !important;
+}
+
+.err {
+    color: red !important;
+    font-size: 20px;
+}
+
+.clr {
+    background-color: red !important;
+}
+
+.add {
+    background-color: lightgreen !important;
+}
+
+.addAll {
+    background-color: green !important;
+}
+
+.tb {
+    margin-top: 10px;
+}
+
+* {
+    user-select: none !important;
+}
+
+th:hover {
+    background-color: lightblue !important;
+    cursor: pointer;
+}

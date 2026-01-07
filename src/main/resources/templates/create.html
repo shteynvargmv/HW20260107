@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageName}"></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h1>Create person</h1>
+
+<form method="post" th:action="@{/home/create}" th:object="${dto}">
+
+    Name : <input type="text" th:field="*{person.name}">
+    <span style="color: red" th:if="${#fields.hasErrors('person.name')}" th:errors="*{person.name}"></span>
+    <br>
+    Surname : <input type="text" th:field="*{person.surname}">
+    <span style="color: red" th:if="${#fields.hasErrors('person.surname')}" th:errors="*{person.surname}"></span>
+    <br>
+    Email : <input type="text" th:field="*{person.email}">
+    <span style="color: red" th:if="${#fields.hasErrors('person.email')}" th:errors="*{person.email}"></span>
+    <br>
+    Age : <input type="number" th:field="*{person.age}">
+    <span style="color: red" th:if="${#fields.hasErrors('person.age')}" th:errors="*{person.age}"></span>
+    <br>
+    Profession : <input type="text" th:field="*{profession.name}">
+    <span style="color: red" th:if="${#fields.hasErrors('profession.name')}" th:errors="*{profession.name}"></span>
+    <br>
+
+    <button type="submit">Save</button>
+    <a th:href="@{/home/people}">Cancel</a>
+
+</form>
+</body>
+</html>
