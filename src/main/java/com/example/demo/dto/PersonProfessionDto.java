@@ -36,5 +36,4 @@ public class PersonProfessionDto {
         this.profession = profession;
     }
 
-
 }

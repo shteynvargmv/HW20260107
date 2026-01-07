@@ -29,8 +29,23 @@ public class HomeController {
     @Autowired
     private ProfessionRepository professionRepository;
 
+    private static Integer lastUsedPage = 1;
+
+    @PostMapping("/pages/{step}")
+    @ResponseBody
+    public String setPersonsOnPage(@PathVariable Integer step, Model model) {
+        int newValue = PersonProfessionListDto.personsOnPage + step;
+        int pagesCount = (int) Math.ceil((double) personRepository.count() / PersonProfessionListDto.personsOnPage);
+        if (newValue > 0 && newValue <= pagesCount * PersonProfessionListDto.personsOnPage) {
+            PersonProfessionListDto.personsOnPage += step;
+            return "Changed " + PersonProfessionListDto.personsOnPage;
+        }
+        return "Not possible to change";
+    }
+
     @GetMapping("/people")
     public String getAllPage(@RequestParam(defaultValue = "1") Integer page, Model model) {
+        lastUsedPage = page;
         List<PersonProfessionDto> dtos = new ArrayList<>();
         List<Person> people = personRepository.findAll();
         if (!people.isEmpty()) {
@@ -43,10 +58,10 @@ public class HomeController {
                 }
             }).toList();
         }
-        Integer pagesCount = (int) Math.ceil((double) dtos.size() / PersonProfessionListDto.PERSONS_ON_PAGE);
-        int from = (page - 1) * PersonProfessionListDto.PERSONS_ON_PAGE;
-        int to = from + PersonProfessionListDto.PERSONS_ON_PAGE;
-        if (page.equals(pagesCount)){
+        Integer pagesCount = (int) Math.ceil((double) dtos.size() / PersonProfessionListDto.personsOnPage);
+        int from = (page - 1) * PersonProfessionListDto.personsOnPage;
+        int to = from + PersonProfessionListDto.personsOnPage;
+        if (page >= pagesCount){
             to = dtos.size();
         }
         model.addAttribute("dtos", new PersonProfessionListDto(dtos.subList(from,to), pagesCount, page));
@@ -68,12 +83,13 @@ public class HomeController {
             Person person = optPerson.get();
             Profession profession = person.getProfession();
             personRepository.delete(person);
-            String result = "Person deleted => " + person;
-            result += deleteProfessionIfNotUsed(profession.getId());
-            return result;
-        } else {
-            return "User not found => " + id;
+            deleteProfessionIfNotUsed(profession.getId());
         }
+        Integer pagesCount = (int) Math.ceil((double) personRepository.count() / PersonProfessionListDto.personsOnPage);
+        if (lastUsedPage > pagesCount && lastUsedPage != 1){
+            lastUsedPage -= 1;
+        }
+        return "/home/people?page=" + lastUsedPage;
     }
 
     private String deleteProfessionIfNotUsed(Long id) {
@@ -93,16 +109,6 @@ public class HomeController {
         }
         return "";
     }
-
-//    @GetMapping("/delete/{id}")
-//    public String deleteById(@PathVariable Long id, Model model) {
-//        personRepository.deleteById(id);
-//        List<Person> people = personRepository.findAll();
-//        model.addAttribute("people", people);
-//        model.addAttribute("pageName", "Home page");
-//
-//        return "home";
-//    }
 
     @GetMapping("/add")
     public String add(Model model) {
@@ -142,7 +148,7 @@ public class HomeController {
             if (!existed.getId().equals(oldProfessionId)) {
                 deleteProfessionIfNotUsed(oldProfessionId);
             }
-            return "redirect:/home/people";
+            return "redirect:/home/people?page=" + lastUsedPage;
         } else {
             model.addAttribute("org.springframework.validation.BindingResult.dto", bindir);
             model.addAttribute("dto", dto);
@@ -163,9 +169,10 @@ public class HomeController {
                 profession = professionRepository.save(dto.getProfession());
             }
             dto.getPerson().setProfession(profession);
-            Person person = personRepository.save(dto.getPerson());
+            personRepository.save(dto.getPerson());
         }
-        return "redirect:/home/people";
+        int pagesCount = (int) Math.ceil((double) personRepository.count() / PersonProfessionListDto.personsOnPage);
+        return "redirect:/home/people?page=" + pagesCount;
     }
 
     @GetMapping("/clear")

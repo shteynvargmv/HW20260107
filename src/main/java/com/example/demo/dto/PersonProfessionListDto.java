@@ -1,38 +1,27 @@
 package com.example.demo.dto;
 
-import com.example.demo.entity.Person;
-import com.example.demo.entity.Profession;
-
 import java.util.List;
 
 public class PersonProfessionListDto {
-    public static final Integer PERSONS_ON_PAGE = 10;
+    public static Integer personsOnPage = 10;
     private List<PersonProfessionDto> data;
     private Integer pagesCount;
     private Integer currentPage;
-
-    public PersonProfessionListDto(List<PersonProfessionDto> data) {
-        this.data = data;
-        this.pagesCount = data.size() / PERSONS_ON_PAGE;
-        if ( (data.size() % PERSONS_ON_PAGE) != 0 ) {
-            this.pagesCount += 1;
-        }
-        this.currentPage = 1;
-    }
-
-    public PersonProfessionListDto(List<PersonProfessionDto> data, Integer page) {
-        this.data = data;
-        this.pagesCount = data.size() / PERSONS_ON_PAGE;
-        if ( (data.size() % PERSONS_ON_PAGE) != 0 ) {
-            this.pagesCount += 1;
-        }
-        this.currentPage = page;
-    }
+    private Integer onPage;
 
     public PersonProfessionListDto(List<PersonProfessionDto> data, Integer pagesCount, Integer currentPage) {
         this.data = data;
         this.pagesCount = pagesCount;
         this.currentPage = currentPage;
+        this.onPage = PersonProfessionListDto.personsOnPage;
+    }
+
+    public void setOnPage(Integer onPage) {
+        this.onPage = onPage;
+    }
+
+    public Integer getOnPage() {
+        return onPage;
     }
 
     public void setCurrentPage(Integer currentPage) {
