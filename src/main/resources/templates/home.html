@@ -41,7 +41,7 @@
     <table>
         <thead>
         <tr>
-            <th>№п/п</th>
+            <th></th>
             <th th:onclick="'sortTable(1,'+${(dtos.getCurrentPage()-1)*dtos.getOnPage()}+')'">Id</th>
             <th th:onclick="'sortTable(2,'+${(dtos.getCurrentPage()-1)*dtos.getOnPage()}+')'">Name</th>
             <th th:onclick="'sortTable(3,'+${(dtos.getCurrentPage()-1)*dtos.getOnPage()}+')'">Surname</th>
@@ -54,7 +54,7 @@
         <tbody>
         <tr th:each="dto,stat : ${dtos.getData()}" th:attr="data-id=${dto.getPerson().getId()}">
             <td th:style="'min-width: 70px !important;'"
-                th:text="${stat.index + 1 + (dtos.getCurrentPage()-1)*10}"></td>
+                th:text="${stat.index + 1 + (dtos.getCurrentPage()-1)*dtos.getOnPage()}"></td>
             <td th:style="'min-width: 50px !important;'" th:text="${dto.getPerson().getId()}"></td>
             <td th:style="'min-width: 75px !important;'" th:text="${dto.getPerson().getName()}"></td>
             <td th:style="'min-width: 95px !important;'" th:text="${dto.getPerson().getSurname()}"></td>
