@@ -30,7 +30,7 @@ public class HomeController {
     private ProfessionRepository professionRepository;
 
     @GetMapping("/people")
-    public String getAll(Model model) {
+    public String getAllPage(@RequestParam(defaultValue = "1") Integer page, Model model) {
         List<PersonProfessionDto> dtos = new ArrayList<>();
         List<Person> people = personRepository.findAll();
         if (!people.isEmpty()) {
@@ -43,25 +43,13 @@ public class HomeController {
                 }
             }).toList();
         }
-        model.addAttribute("dtos", new PersonProfessionListDto(dtos));
-        model.addAttribute("pageName", "Home page");
-        return "home";
-    }
-    @GetMapping("/people/page")
-    public String getAllPage(@RequestParam Integer page, Model model) {
-        List<PersonProfessionDto> dtos = new ArrayList<>();
-        List<Person> people = personRepository.findAll();
-        if (!people.isEmpty()) {
-            dtos = people.stream().map(person -> {
-                Optional<Profession> optProfession = professionRepository.findById(person.getProfession().getId());
-                if (optProfession.isPresent()) {
-                    return new PersonProfessionDto(person, optProfession.get());
-                } else {
-                    return new PersonProfessionDto(person, new Profession());
-                }
-            }).toList();
+        Integer pagesCount = (int) Math.ceil((double) dtos.size() / PersonProfessionListDto.PERSONS_ON_PAGE);
+        int from = (page - 1) * PersonProfessionListDto.PERSONS_ON_PAGE;
+        int to = from + PersonProfessionListDto.PERSONS_ON_PAGE;
+        if (page.equals(pagesCount)){
+            to = dtos.size();
         }
-        model.addAttribute("dtos", new PersonProfessionListDto(dtos, page));
+        model.addAttribute("dtos", new PersonProfessionListDto(dtos.subList(from,to), pagesCount, page));
         model.addAttribute("pageName", "Home page");
         return "home";
     }
@@ -88,15 +76,16 @@ public class HomeController {
         }
     }
 
-    private String deleteProfessionIfNotUsed(Long id){
+    private String deleteProfessionIfNotUsed(Long id) {
         Optional<Profession> optProfession = professionRepository.findById(id);
         if (optProfession.isPresent()) {
             Profession profession = optProfession.get();
             List<Person> persons = personRepository.findByProfessionId(profession.getId());
-            System.out.println("Количество " );
-            System.out.println(persons.size() + " id " );
+            System.out.println("Количество ");
+            System.out.println(persons.size() + " id ");
             persons.stream().forEach(person -> {
-                System.out.println(" " + person.getId()); }) ;
+                System.out.println(" " + person.getId());
+            });
             if (persons == null || persons.isEmpty()) {
                 professionRepository.delete(profession);
                 return "\nProfession deleted => " + profession;
@@ -144,18 +133,18 @@ public class HomeController {
             Profession profession = dto.getProfession();
             Long oldProfessionId = profession.getId();
             Profession existed = professionRepository.findFirstByNameEquals(profession.getName());
-            if (existed == null){
+            if (existed == null) {
                 profession.setId(null);
                 existed = professionRepository.save(profession);
             }
             person.setProfession(existed);
             personRepository.save(person);
-            if (!existed.getId().equals(oldProfessionId)){
+            if (!existed.getId().equals(oldProfessionId)) {
                 deleteProfessionIfNotUsed(oldProfessionId);
             }
             return "redirect:/home/people";
         } else {
-            model.addAttribute("org.springframework.validation.BindingResult.dto",bindir);
+            model.addAttribute("org.springframework.validation.BindingResult.dto", bindir);
             model.addAttribute("dto", dto);
             return "edit";
         }

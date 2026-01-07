@@ -18,22 +18,22 @@
     <ul class="pagination">
         <li class="page-item" th:classappend="${dtos.getCurrentPage() == 1} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/people(page=${dtos.getCurrentPage() > 1 ? dtos.getData().getCurrentPage() - 1 : 1})}">
+               th:href="@{/home/people(page=${dtos.getCurrentPage() > 1 ? dtos.getCurrentPage() - 1 : 1})}">
                 Previous
             </a>
         </li>
         <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, dtos.getPagesCount())}">
             <a class="page-link"
-               th:href="@{/home/people/page/(page=${pageNum})}"
+               th:href="@{/home/people(page=${pageNum})}"
                th:text="${pageNum}"
-               th:classappend="${dtos.getPagesCount() == pageNum} ? 'active'">
+               th:classappend="${dtos.getCurrentPage() == pageNum} ? 'active'">
             </a></li>
         <li class="page-item"><a class="page-link" href="#">Next</a></li>
     </ul>
 </nav>
 </div>
 <div id="peopleTable" class="tb" th:if="${dtos!=null and !dtos.getData().isEmpty()}">
-    <table th:style="'border: 1px;'">
+    <table>
        <thead>
             <tr>
                 <th onclick="sortTable(0)">Id</th>

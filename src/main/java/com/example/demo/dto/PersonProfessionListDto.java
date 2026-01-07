@@ -29,6 +29,12 @@ public class PersonProfessionListDto {
         this.currentPage = page;
     }
 
+    public PersonProfessionListDto(List<PersonProfessionDto> data, Integer pagesCount, Integer currentPage) {
+        this.data = data;
+        this.pagesCount = pagesCount;
+        this.currentPage = currentPage;
+    }
+
     public void setCurrentPage(Integer currentPage) {
         this.currentPage = currentPage;
     }
